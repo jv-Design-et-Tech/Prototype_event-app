@@ -2,11 +2,13 @@
   "name": "figma-make-app",
   "private": true,
   "version": "1.0.0",
+  "homepage": "https://jv-Design-et-Tech.github.io/Prototype_event-app",
   "type": "module",
   "scripts": {
     "dev": "vite --host 0.0.0.0",
     "build": "vite build",
     "preview": "vite preview",
+    "deploy": "gh-pages -d dist",
     "format": "oxfmt"
   },
   "dependencies": {
@@ -22,6 +24,7 @@
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
     "@vitejs/plugin-react": "^6.0.0",
+    "gh-pages": "^6.3.0",
     "oxfmt": "^0.2.0",
     "tailwindcss": "^4.0.0",
     "typescript": "^5.7.0",
