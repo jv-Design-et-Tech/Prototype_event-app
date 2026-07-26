@@ -1,0 +1,10 @@
+{
+  "description": "Discover and explore events with intuitive search, filters, and personalized favorites in a responsive, user-friendly interface designed for seamless event planning.",
+  "robots": {
+    "index": false
+  },
+  "accessibility": {
+    "addBypassLinks": false,
+    "ignoreReducedMotion": false
+  }
+}
