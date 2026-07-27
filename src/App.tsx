@@ -11,6 +11,7 @@ import ProfileScreen from "./pages/ProfileScreen"
 import EventDetailScreen from "./pages/EventDetailScreen"
 import BookingScreen from "./pages/BookingScreen"
 import TicketScreen from "./pages/TicketScreen"
+import CreateEventScreen from "./pages/CreateEventScreen"
 import { favoriteEventIds, events, notifications } from "./data/mock"
 import type { Event, Ticket } from "./types"
 
@@ -26,6 +27,7 @@ type AppState =
   | "event_detail"
   | "booking"
   | "ticket"
+  | "create_event"
 
 type NavScreen = "home" | "search" | "favorites" | "notifications" | "profile"
 
@@ -73,6 +75,7 @@ export default function App() {
   }, [appState, prevState, goTo])
 
   const showBottomNav = ["home", "search", "favorites", "notifications", "profile"].includes(appState)
+  const showFab = appState === "home"
 
   return (
     <div
@@ -189,6 +192,16 @@ export default function App() {
         />
       )}
 
+      {appState === "create_event" && (
+        <CreateEventScreen
+          onBack={() => goTo(prevState || "home", false)}
+          onPublish={() => {
+            setActiveNav("home")
+            goTo("home", false)
+          }}
+        />
+      )}
+
       {/* Bottom Navigation */}
       {showBottomNav && (
         <BottomNav
@@ -196,6 +209,19 @@ export default function App() {
           onNavigate={handleNavChange}
           unreadCount={unreadNotifs}
         />
+      )}
+
+      {/* FAB – Create Event */}
+      {showFab && (
+        <button
+          onClick={() => { setPrevState("home"); goTo("create_event") }}
+          aria-label="Create event"
+          className="absolute bottom-24 right-4 w-14 h-14 rounded-full bg-violet-600 shadow-lg shadow-violet-400/40 flex items-center justify-center active:scale-95 transition-transform z-40"
+        >
+          <svg viewBox="0 0 24 24" fill="none" className="w-6 h-6 stroke-white" strokeWidth={2.5} strokeLinecap="round">
+            <path d="M12 5v14M5 12h14" />
+          </svg>
+        </button>
       )}
     </div>
   )

@@ -328,10 +328,6 @@ export default function EventDetailScreen({
         </div>
       </div>
 
-      {/* AJOUTER ICI CARTE GOOGLE MAP */}
-
-      {/* SUGGESTION AUTRES EVENT */}
-
       {/* Bottom CTA */}
       <div className="absolute bottom-0 left-0 right-0 bg-white border-t border-gray-100 px-5 py-4 pb-8">
         <div className="flex items-center gap-4">
