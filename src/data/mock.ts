@@ -321,9 +321,9 @@ export const events: Event[] = [
     description: "The ultimate tribute to Daft Punk at the legendary Rex Club.",
     longDescription:
       "Get ready for an immersive electronic music experience celebrating the legendary Daft Punk. Five world-class DJs will recreate the iconic sounds of Homework, Discovery, and Random Access Memories. The venue transforms with custom LED visuals and a state-of-the-art sound system. This is not just a concert—it is a journey through 30 years of electronic music history.",
-    image: "https://images.unsplash.com/photo-1571266028243-e4733b0f0bb0?w=800&h=600&fit=crop&auto=format",
+    image: "https://images.unsplash.com/photo-1508700929628-666bc8bd84ea?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     images: [
-      "https://images.unsplash.com/photo-1571266028243-e4733b0f0bb0?w=800&h=600&fit=crop&auto=format",
+      "https://images.unsplash.com/photo-1508700929628-666bc8bd84ea?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
       "https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?w=800&h=600&fit=crop&auto=format",
     ],
     date: "2025-04-19",
