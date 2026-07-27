@@ -369,7 +369,7 @@ export default function CreateEventScreen({ onBack, onPublish }: CreateEventScre
                 aria-checked={form.isOnline}
               >
                 <span
-                  className={`absolute top-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform ${form.isOnline ? "translate-x-6" : "translate-x-0.5"}`}
+                  className={`absolute top-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform ${form.isOnline ? "-translate-x-5.5" : "translate-x-0.5"}`}
                 />
               </button>
             </div>
