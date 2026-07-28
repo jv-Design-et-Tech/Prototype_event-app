@@ -34,6 +34,7 @@ type NavScreen = "home" | "search" | "favorites" | "notifications" | "profile"
 export default function App() {
   const [appState, setAppState] = useState<AppState>("splash")
   const [activeNav, setActiveNav] = useState<NavScreen>("home")
+  const [isLoggedIn, setIsLoggedIn] = useState(false)
   const [favs, setFavs] = useState<string[]>(favoriteEventIds)
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null)
   const [selectedTicket, setSelectedTicket] = useState<Ticket | null>(null)
@@ -94,6 +95,7 @@ export default function App() {
       {appState === "auth" && (
         <AuthScreen
           onLogin={() => {
+            setIsLoggedIn(true)
             setActiveNav("home")
             goTo("home", false)
           }}
@@ -165,12 +167,14 @@ export default function App() {
         <EventDetailScreen
           event={selectedEvent}
           isFavorite={favs.includes(selectedEvent.id)}
+          isLoggedIn={isLoggedIn}
           onToggleFavorite={toggleFavorite}
           onBack={handleBack}
           onBook={(_event) => {
             setPrevState("event_detail")
             goTo("booking")
           }}
+          onSignIn={() => goTo("auth", false)}
         />
       )}
 
