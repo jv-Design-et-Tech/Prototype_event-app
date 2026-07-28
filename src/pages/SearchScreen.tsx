@@ -217,7 +217,8 @@ export default function SearchScreen({ favorites, onToggleFavorite, onEventClick
           <div className="px-4 pt-4">
             <p className="text-xs text-gray-500 mb-3">
               <span className="font-bold text-gray-900">{filtered.length}</span> result{filtered.length !== 1 ? "s" : ""}
-              {query ? ` for "${query}"` : ""}
+              {query && ` for "${query}"`}
+              {!query && selectedCategory !== "all" && ` in ${categories.find(c => c.id === selectedCategory)?.name}`}
             </p>
             {filtered.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-20">
