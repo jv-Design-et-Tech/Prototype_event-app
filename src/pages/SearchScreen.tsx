@@ -183,7 +183,7 @@ export default function SearchScreen({ favorites, onToggleFavorite, onEventClick
 
       {/* Content */}
       <div className="flex-1 overflow-y-auto pb-24">
-        {!query && !isFocused ? (
+        {!query && !isFocused && !hasFilters ? (
           <div className="px-4 pt-5">
             <p className="text-xs font-bold text-gray-500 uppercase tracking-wide mb-3">Popular Searches</p>
             <div className="flex flex-wrap gap-2">
