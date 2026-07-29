@@ -55,7 +55,7 @@ export default function HomeScreen({
               <MapPin size={13} className="text-violet-600" />
               <span className="text-violet-700 text-xs font-semibold">Paris</span>
             </div>
-            <button
+            {/* <button
               onClick={onNotificationsClick}
               className="relative w-9 h-9 rounded-full bg-gray-100 flex items-center justify-center"
               aria-label="Notifications"
@@ -64,18 +64,18 @@ export default function HomeScreen({
               {unreadCount > 0 && (
                 <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full" />
               )}
-            </button>
+            </button> */}
           </div>
         </div>
 
         {/* Search bar */}
-        <button
+        {/* <button
           onClick={onSearchClick}
           className="w-full flex items-center gap-3 bg-gray-100 rounded-xl px-4 py-3"
         >
           <Search size={16} className="text-gray-400 flex-shrink-0" />
           <span className="text-gray-400 text-sm">Search events, artists, venues…</span>
-        </button>
+        </button> */}
       </div>
 
       {/* Featured Events */}
