@@ -14,6 +14,7 @@ import {
   Check,
   LogIn,
   X,
+  Navigation
 } from "lucide-react"
 import type { Event, Review } from "../types"
 import { formatDate, formatAttendees } from "../utils/format"
@@ -64,6 +65,9 @@ export default function EventDetailScreen({
   const [selectedCalendar, setSelectedCalendar] = useState<"google" | "apple" | null>(null)
   const [showAuthGate, setShowAuthGate] = useState(false)
 
+  // Maps state
+  const [showMapsSheet, setShowMapsSheet] = useState(false)
+
   const eventReviews = allReviews.filter((r) => r.eventId === event.id)
   const spotsLeft = event.maxAttendees - event.attendeesCount
   const spotsPercent = (event.attendeesCount / event.maxAttendees) * 100
@@ -87,7 +91,17 @@ export default function EventDetailScreen({
     setSelectedCalendar(null)
   }
 
-  const overlayVisible = calendarSheet !== "closed" || showAuthGate
+  const overlayVisible = calendarSheet !== "closed" || showAuthGate || showMapsSheet
+
+  const openInMaps = (provider: "google" | "apple") => {
+    const query = encodeURIComponent(`${event.location}, ${event.address}, ${event.city}`)
+    const url =
+      provider === "google"
+        ? `https://www.google.com/maps/search/?api=1&query=${query}`
+        : `https://maps.apple.com/?q=${query}`
+    window.open(url, "_blank", "noopener,noreferrer")
+    setShowMapsSheet(false)
+  }
 
   return (
     <div className="flex flex-col h-full overflow-hidden bg-white">
@@ -176,7 +190,7 @@ export default function EventDetailScreen({
           <div className="flex items-center gap-4 mb-5">
             <div className="flex items-center gap-1.5">
               <div className="flex items-center gap-0.5">
-                {[1,2,3,4,5].map((i) => (
+                {[1, 2, 3, 4, 5].map((i) => (
                   <Star key={i} size={13} className={i <= Math.round(event.rating) ? "text-yellow-400 fill-yellow-400" : "text-gray-200 fill-gray-200"} />
                 ))}
               </div>
@@ -221,6 +235,9 @@ export default function EventDetailScreen({
             </div>
           </div>
 
+          {/* ── Map section ── */}
+          <MapPreview event={event} onTap={() => setShowMapsSheet(true)} />
+
           {/* Capacity bar */}
           <div className="mb-5 bg-gray-50 rounded-2xl p-4">
             <div className="flex items-center justify-between mb-2">
@@ -247,11 +264,10 @@ export default function EventDetailScreen({
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
-                className={`flex-1 py-3 text-sm font-semibold capitalize transition-colors ${
-                  activeTab === tab
+                className={`flex-1 py-3 text-sm font-semibold capitalize transition-colors ${activeTab === tab
                     ? "text-violet-600 border-b-2 border-violet-600"
                     : "text-gray-500"
-                }`}
+                  }`}
               >
                 {tab === "reviews" ? `Reviews (${eventReviews.length || event.reviewsCount})` : "Details"}
               </button>
@@ -314,11 +330,10 @@ export default function EventDetailScreen({
                   </div>
                   <button
                     onClick={() => setIsFollowingOrganizer(!isFollowingOrganizer)}
-                    className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-colors ${
-                      isFollowingOrganizer
+                    className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-colors ${isFollowingOrganizer
                         ? "bg-violet-100 text-violet-700"
                         : "bg-violet-600 text-white"
-                    }`}
+                      }`}
                   >
                     {isFollowingOrganizer ? "Following" : "Follow"}
                   </button>
@@ -420,7 +435,8 @@ export default function EventDetailScreen({
               onClick={() => { setShowAuthGate(false); onSignIn() }}
               className="w-full bg-violet-600 text-white font-bold py-3.5 rounded-2xl active:bg-violet-800 transition-colors"
             >
-              Sign In
+              Sign In{/* ── Map section ── */}
+              <MapPreview event={event} onTap={() => setShowMapsSheet(true)} />
             </button>
             <button
               onClick={() => setShowAuthGate(false)}
@@ -430,6 +446,15 @@ export default function EventDetailScreen({
             </button>
           </div>
         </div>
+      )}
+
+      {/* ── Maps bottom sheet ── */}
+      {showMapsSheet && (
+        <MapsSheet
+          event={event}
+          onClose={() => setShowMapsSheet(false)}
+          onSelect={openInMaps}
+        />
       )}
 
       {/* ── Calendar bottom sheet ── */}
@@ -461,10 +486,10 @@ export default function EventDetailScreen({
                 >
                   <div className="w-12 h-12 rounded-2xl bg-white shadow-sm flex items-center justify-center flex-shrink-0 border border-gray-100">
                     <svg viewBox="0 0 48 48" className="w-7 h-7">
-                      <path fill="#4285F4" d="M44 20H24v8h11.3C33.7 32.6 29.4 35 24 35c-6.1 0-11-4.9-11-11s4.9-11 11-11c2.9 0 5.5 1.1 7.5 2.9l5.7-5.7C33.8 7.3 29.2 5 24 5 13.5 5 5 13.5 5 24s8.5 19 19 19c9.7 0 18-7 18-19 0-1.3-.1-2.7-.3-4z"/>
-                      <path fill="#34A853" d="M6.3 14.7l6.6 4.8C14.7 16 19.1 13 24 13c2.9 0 5.5 1.1 7.5 2.9l5.7-5.7C33.8 7.3 29.2 5 24 5c-7.6 0-14.1 4.4-17.7 9.7z"/>
-                      <path fill="#FBBC05" d="M24 43c5.2 0 9.8-1.8 13.3-4.7l-6.1-5.2C29.4 34.6 26.8 35 24 35c-5.4 0-9.8-3.5-11.3-8.3l-6.5 5C9.9 38.7 16.4 43 24 43z"/>
-                      <path fill="#EA4335" d="M44 20H24v8h11.3c-.7 2.1-2 3.9-3.8 5.1l6.1 5.2c3.6-3.3 5.8-8.2 5.8-14.3 0-1.3-.1-2.7-.4-4z"/>
+                      <path fill="#4285F4" d="M44 20H24v8h11.3C33.7 32.6 29.4 35 24 35c-6.1 0-11-4.9-11-11s4.9-11 11-11c2.9 0 5.5 1.1 7.5 2.9l5.7-5.7C33.8 7.3 29.2 5 24 5 13.5 5 5 13.5 5 24s8.5 19 19 19c9.7 0 18-7 18-19 0-1.3-.1-2.7-.3-4z" />
+                      <path fill="#34A853" d="M6.3 14.7l6.6 4.8C14.7 16 19.1 13 24 13c2.9 0 5.5 1.1 7.5 2.9l5.7-5.7C33.8 7.3 29.2 5 24 5c-7.6 0-14.1 4.4-17.7 9.7z" />
+                      <path fill="#FBBC05" d="M24 43c5.2 0 9.8-1.8 13.3-4.7l-6.1-5.2C29.4 34.6 26.8 35 24 35c-5.4 0-9.8-3.5-11.3-8.3l-6.5 5C9.9 38.7 16.4 43 24 43z" />
+                      <path fill="#EA4335" d="M44 20H24v8h11.3c-.7 2.1-2 3.9-3.8 5.1l6.1 5.2c3.6-3.3 5.8-8.2 5.8-14.3 0-1.3-.1-2.7-.4-4z" />
                     </svg>
                   </div>
                   <div className="flex-1 text-left">
@@ -473,7 +498,7 @@ export default function EventDetailScreen({
                   </div>
                   <div className="w-6 h-6 rounded-full bg-gray-200 flex items-center justify-center group-active:bg-violet-100">
                     <svg viewBox="0 0 16 16" fill="none" className="w-3.5 h-3.5">
-                      <path d="M6 4l4 4-4 4" stroke="#9CA3AF" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                      <path d="M6 4l4 4-4 4" stroke="#9CA3AF" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                     </svg>
                   </div>
                 </button>
@@ -485,15 +510,15 @@ export default function EventDetailScreen({
                 >
                   <div className="w-12 h-12 rounded-2xl bg-white shadow-sm flex items-center justify-center flex-shrink-0 border border-gray-100">
                     <svg viewBox="0 0 48 48" className="w-7 h-7">
-                      <rect width="48" height="48" rx="10" fill="#FF3B30"/>
-                      <rect x="6" y="6" width="36" height="36" rx="6" fill="white"/>
-                      <rect x="6" y="6" width="36" height="10" rx="0" fill="#FF3B30"/>
-                      <rect x="6" y="6" width="36" height="10" rx="6" fill="#FF3B30"/>
+                      <rect width="48" height="48" rx="10" fill="#FF3B30" />
+                      <rect x="6" y="6" width="36" height="36" rx="6" fill="white" />
+                      <rect x="6" y="6" width="36" height="10" rx="0" fill="#FF3B30" />
+                      <rect x="6" y="6" width="36" height="10" rx="6" fill="#FF3B30" />
                       <text x="24" y="36" textAnchor="middle" fontSize="14" fontWeight="800" fill="#1C1C1E" fontFamily="system-ui">
                         {new Date().getDate()}
                       </text>
-                      <circle cx="15" cy="8" r="2" fill="white"/>
-                      <circle cx="33" cy="8" r="2" fill="white"/>
+                      <circle cx="15" cy="8" r="2" fill="white" />
+                      <circle cx="33" cy="8" r="2" fill="white" />
                     </svg>
                   </div>
                   <div className="flex-1 text-left">
@@ -502,7 +527,7 @@ export default function EventDetailScreen({
                   </div>
                   <div className="w-6 h-6 rounded-full bg-gray-200 flex items-center justify-center group-active:bg-violet-100">
                     <svg viewBox="0 0 16 16" fill="none" className="w-3.5 h-3.5">
-                      <path d="M6 4l4 4-4 4" stroke="#9CA3AF" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                      <path d="M6 4l4 4-4 4" stroke="#9CA3AF" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                     </svg>
                   </div>
                 </button>
@@ -571,6 +596,150 @@ export default function EventDetailScreen({
   )
 }
 
+// ── Map preview component ──────────────────────────────────────────────────
+
+interface MapPreviewProps {
+  event: Event
+  onTap: () => void
+}
+
+function MapPreview({ event, onTap }: MapPreviewProps) {
+  const lat = event.lat ?? 48.8566
+  const lng = event.lng ?? 2.3522
+  const pad = 0.012
+  const bbox = `${lng - pad},${lat - pad},${lng + pad},${lat + pad}`
+  const embedUrl = `https://www.openstreetmap.org/export/embed.html?bbox=${bbox}&layer=mapnik&marker=${lat},${lng}`
+
+  return (
+    <div className="mb-5">
+
+      {/* Map container */}
+      <div
+        className="relative rounded-2xl overflow-hidden border border-gray-200"
+        style={{ height: 180, boxShadow: "0 2px 12px rgba(0,0,0,0.08)" }}
+      >
+        {/* OpenStreetMap iframe */}
+        <iframe
+          title={`Map – ${event.location}`}
+          src={embedUrl}
+          className="w-full h-full"
+          style={{ border: 0, pointerEvents: "none" }}
+          loading="lazy"
+          aria-hidden="true"
+        />
+
+        {/* Transparent tap overlay */}
+        <button
+          onClick={onTap}
+          className="absolute inset-0 w-full h-full"
+          aria-label="Open location in maps app"
+        />
+
+        {/* "Open in Maps" pill */}
+        <div className="absolute bottom-3 right-3 pointer-events-none">
+          <div className="flex items-center gap-1.5 bg-white/90 backdrop-blur-sm px-3 py-1.5 rounded-full shadow-sm border border-gray-200/60">
+            <Navigation size={12} className="text-violet-600" />
+            <span className="text-gray-700 text-xs font-semibold">Open in Maps</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// ── Open-with bottom sheet ─────────────────────────────────────────────────
+
+interface MapsSheetProps {
+  event: Event
+  onClose: () => void
+  onSelect: (provider: "google" | "apple") => void
+}
+
+function MapsSheet({ event, onClose, onSelect }: MapsSheetProps) {
+  return (
+    <div
+      className="absolute bottom-0 left-0 right-0 bg-white rounded-t-3xl z-40 shadow-2xl"
+      style={{ transform: "translateY(0)", transition: "transform 0.35s cubic-bezier(0.32,0.72,0,1)" }}
+      onClick={(e) => e.stopPropagation()}
+    >
+      {/* Handle */}
+      <div className="flex justify-center pt-3 pb-1">
+        <div className="w-10 h-1 bg-gray-200 rounded-full" />
+      </div>
+
+      <div className="px-5 pb-10 pt-3">
+        <h2 className="text-gray-900 font-extrabold text-lg text-center mb-1">Open with</h2>
+        <p className="text-gray-400 text-sm text-center mb-6 leading-relaxed">
+          Get directions to{" "}
+          <span className="font-semibold text-gray-600">{event.location}</span>
+        </p>
+
+        <div className="space-y-3">
+          {/* Google Maps */}
+          <button
+            onClick={() => onSelect("google")}
+            className="w-full flex items-center gap-4 bg-gray-50 active:bg-gray-100 rounded-2xl px-5 py-4 transition-colors group"
+          >
+            <div className="w-12 h-12 rounded-2xl bg-white shadow-sm flex items-center justify-center flex-shrink-0 border border-gray-100">
+              <svg viewBox="0 0 48 48" className="w-7 h-7">
+                <path fill="#34A853" d="M24 38.4C24 38.4 10 26.1 10 18.6 10 11.1 16.3 5 24 5s14 6.1 14 13.6c0 7.5-14 19.8-14 19.8z" />
+                <path fill="#4285F4" d="M24 5C16.3 5 10 11.1 10 18.6c0 2.6.8 5 2.1 7.1L24 9.8V5z" />
+                <path fill="#FBBC05" d="M24 5v4.8L35.9 25.7c1.3-2.1 2.1-4.5 2.1-7.1C38 11.1 31.7 5 24 5z" />
+                <path fill="#EA4335" d="M10 18.6c0 2.6.8 5 2.1 7.1L24 9.8c-5.5 0-14 3.9-14 8.8z" />
+                <circle fill="white" cx="24" cy="18.6" r="5" />
+              </svg>
+            </div>
+            <div className="flex-1 text-left">
+              <p className="text-gray-900 font-bold text-base">Google Maps</p>
+              <p className="text-gray-400 text-xs mt-0.5 truncate">{event.address}, {event.city}</p>
+            </div>
+            <svg viewBox="0 0 16 16" fill="none" className="w-4 h-4 flex-shrink-0">
+              <path d="M6 4l4 4-4 4" stroke="#D1D5DB" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </button>
+
+          {/* Apple Maps */}
+          <button
+            onClick={() => onSelect("apple")}
+            className="w-full flex items-center gap-4 bg-gray-50 active:bg-gray-100 rounded-2xl px-5 py-4 transition-colors group"
+          >
+            <div className="w-12 h-12 rounded-2xl bg-white shadow-sm flex items-center justify-center flex-shrink-0 border border-gray-100 overflow-hidden">
+              <svg viewBox="0 0 48 48" className="w-12 h-12">
+                <rect width="48" height="48" fill="white" />
+                {/* Sky gradient */}
+                <rect x="0" y="0" width="48" height="28" fill="#5AC8FA" />
+                {/* Ground */}
+                <rect x="0" y="28" width="48" height="20" fill="#5DC15A" />
+                {/* Road */}
+                <path d="M22 48 L24 20 L26 48Z" fill="#B0B0B0" />
+                {/* Pin */}
+                <circle cx="24" cy="16" r="7" fill="#FF3B30" />
+                <circle cx="24" cy="16" r="3" fill="white" />
+                <path d="M24 22 L24 26" stroke="#FF3B30" strokeWidth="2" strokeLinecap="round" />
+              </svg>
+            </div>
+            <div className="flex-1 text-left">
+              <p className="text-gray-900 font-bold text-base">Apple Maps</p>
+              <p className="text-gray-400 text-xs mt-0.5 truncate">{event.address}, {event.city}</p>
+            </div>
+            <svg viewBox="0 0 16 16" fill="none" className="w-4 h-4 flex-shrink-0">
+              <path d="M6 4l4 4-4 4" stroke="#D1D5DB" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </button>
+        </div>
+
+        {/* Cancel */}
+        <button
+          onClick={onClose}
+          className="w-full mt-3 py-3.5 rounded-2xl bg-gray-100 text-gray-700 font-semibold text-sm active:bg-gray-200 transition-colors"
+        >
+          Cancel
+        </button>
+      </div>
+    </div>
+  )
+}
+
 function ReviewCard({ review }: { review: Review }) {
   return (
     <div className="bg-gray-50 rounded-2xl p-4">
@@ -584,7 +753,7 @@ function ReviewCard({ review }: { review: Review }) {
           <p className="text-gray-900 font-bold text-sm">{review.user.name}</p>
           <div className="flex items-center gap-2">
             <div className="flex gap-0.5">
-              {[1,2,3,4,5].map((i) => (
+              {[1, 2, 3, 4, 5].map((i) => (
                 <Star key={i} size={11} className={i <= review.rating ? "text-yellow-400 fill-yellow-400" : "text-gray-200 fill-gray-200"} />
               ))}
             </div>
